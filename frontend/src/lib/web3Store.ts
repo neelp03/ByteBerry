@@ -2,10 +2,8 @@ import { writable } from 'svelte/store';
 import Web3 from 'web3';
 import axios from 'axios';
 import FileStorageContract from '../../../backend/build/contracts/FileStorage.json'; // ABI from Truffle build
+import { PINATA_API_KEY, PINATA_SECRET_KEY, CONTRACT_ADDRESS } from '$lib/config';
 import { Buffer } from 'buffer'; // Import Buffer
-
-// Import config values
-import { PINATA_API_KEY, PINATA_SECRET_KEY, CONTRACT_ADDRESS } from './config';
 
 // Extend the window object to include the Ethereum provider
 declare global {
@@ -31,6 +29,9 @@ export const web3 = writable<Web3Store>({
   contract: null
 });
 
+// Store for uploaded files
+export const uploadedFiles = writable<Array<{ hash: string; timestamp: string }>>([]);
+
 // IPFS setup with Pinata authentication (using axios for manual request)
 export const uploadFileToIPFS = async (file: File): Promise<string> => {
   const url = `https://api.pinata.cloud/pinning/pinFileToIPFS`;
@@ -45,7 +46,16 @@ export const uploadFileToIPFS = async (file: File): Promise<string> => {
         pinata_secret_api_key: PINATA_SECRET_KEY
       }
     });
-    return response.data.IpfsHash; // Return the IPFS hash
+
+    const fileHash = response.data.IpfsHash;
+
+    // Store uploaded file details in the uploadedFiles store
+    uploadedFiles.update((files) => [
+      ...files,
+      { hash: fileHash, timestamp: new Date().toISOString() }
+    ]);
+
+    return fileHash; // Return the IPFS hash
   } catch (error) {
     console.error('IPFS upload error:', error);
     throw new Error('Failed to upload file to IPFS');

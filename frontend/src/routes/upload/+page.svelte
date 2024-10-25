@@ -10,6 +10,7 @@
       ipfsHash = await uploadFileToIPFS(selectedFile);
       transactionStatus = `File uploaded! IPFS Hash: ${ipfsHash}`;
 
+      // Optionally store the file hash on the blockchain
       transactionStatus = 'Storing file on blockchain...';
       await storeFileOnBlockchain(ipfsHash);
       transactionStatus = 'File hash stored on blockchain!';
@@ -17,7 +18,7 @@
   };
 </script>
 
-<h1 class="text-3xl font-bold">Upload File to IPFS</h1>
+<h1 class="text-3xl font-bold mb-4">Upload File to IPFS</h1>
 
 <button on:click={connectWallet} class="mt-4 bg-blue-500 text-white p-2 rounded">
   Connect Wallet
@@ -33,6 +34,9 @@
 
   {#if ipfsHash}
     <p class="mt-4">File uploaded! IPFS Hash: {ipfsHash}</p>
+    <a href={`https://gateway.pinata.cloud/ipfs/${ipfsHash}`} target="_blank" class="text-blue-500 underline">
+      View File on IPFS
+    </a>
   {/if}
   
   <p class="mt-4">{transactionStatus}</p>
