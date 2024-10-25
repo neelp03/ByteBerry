@@ -28,3 +28,14 @@ build/
 coverage/
 
 backend/truffle-config.js
+
+frontend/.svelte-kit
+frontend/.vercel
+frontend/build
+frontend/node_modules
+frontend/.env
+frontend/.env.local
+frontend/.env.development
+frontend/.env.production
+frontend/.env.test
+frontend/src/lib/config.ts
